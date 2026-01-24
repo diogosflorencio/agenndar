@@ -27,6 +27,11 @@ export default function ContaPage() {
   const handleSave = async () => {
     try {
       setLoading(true)
+      if (!supabase) {
+        alert('Configuração do Supabase não encontrada. Configure as variáveis de ambiente e tente novamente.')
+        return
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {

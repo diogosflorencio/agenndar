@@ -51,6 +51,20 @@ export default function DashboardPage() {
   async function loadDashboardData() {
     try {
       setLoading(true)
+
+      if (!supabase) {
+        // Sem env vars no build/preview: evita crash e permite a página renderizar.
+        setUser(null)
+        setSchedules([])
+        setMetrics({
+          agendamentos: 0,
+          cancelados: 0,
+          faltas: 0,
+          agendamentosChange: 0,
+          canceladosChange: 0,
+        })
+        return
+      }
       
       // Buscar usuário atual (simulado - depois integrar com Firebase Auth)
       const { data: userData } = await supabase
@@ -126,6 +140,7 @@ export default function DashboardPage() {
 
   async function handleConfirmAttendance(scheduleId: string, attended: boolean) {
     try {
+      if (!supabase) return
       const newStatus = attended ? 'compareceu' : 'faltou'
       
       const { error } = await supabase

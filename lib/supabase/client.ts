@@ -1,16 +1,30 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+/**
+ * IMPORTANTE (Vercel/Build):
+ * Não podemos dar throw aqui, porque o Next pode importar este arquivo durante o prerender/build.
+ * Em produção, configure as env vars no painel da Vercel.
+ */
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+let _supabase: SupabaseClient | null = null
+
+export function getSupabaseClient(): SupabaseClient | null {
+  if (_supabase) return _supabase
+  if (!supabaseUrl || !supabaseAnonKey) return null
+
+  _supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  })
+
+  return _supabase
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-})
+// Compat: imports existentes (mas pode ser null)
+export const supabase = getSupabaseClient()
 

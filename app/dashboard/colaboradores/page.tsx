@@ -24,17 +24,18 @@ export default function ColaboradoresPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const db = supabase;
+    if (!db) return;
+    db.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      supabase
+      db
         .from("users")
         .select("id")
         .eq("firebase_uid", user.id)
         .single()
         .then(({ data: userRow }) => {
           if (!userRow?.id) return;
-          supabase
+          db
             .from("collaborators")
             .select("id, name, phone")
             .eq("user_id", userRow.id)
@@ -48,7 +49,7 @@ export default function ColaboradoresPage() {
                   phone: c.phone ?? null,
                   initials: (c.name ?? "?")
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n: string) => n[0])
                     .join("")
                     .slice(0, 2)
                     .toUpperCase(),

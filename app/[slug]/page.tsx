@@ -603,6 +603,15 @@ export default function PublicBookingPage() {
     [selectedCollab, collaborators]
   );
 
+  const canBook = !!(
+    selectedService &&
+    selectedDate &&
+    selectedTime &&
+    provider &&
+    service
+  );
+  const canBookAndLoggedIn = canBook && isLoggedIn && clientId;
+
   const handleLogin = useCallback(async () => {
     if (!supabase || !canBook) return;
     setAuthLoading(true);
@@ -670,15 +679,6 @@ export default function PublicBookingPage() {
       setBookingError("Não foi possível confirmar. Tente novamente.");
     }
   }, [provider, service, selectedTime, selectedDate, selectedCollab, clientId]);
-
-  const canBook = !!(
-    selectedService &&
-    selectedDate &&
-    selectedTime &&
-    provider &&
-    service
-  );
-  const canBookAndLoggedIn = canBook && isLoggedIn && clientId;
 
   if (pageLoading) {
     return (

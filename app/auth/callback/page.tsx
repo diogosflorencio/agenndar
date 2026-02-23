@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
@@ -50,5 +50,20 @@ export default function AuthCallbackPage() {
       {status === "loading" && <p className="text-white/60">Confirmando login...</p>}
       {status === "error" && <p className="text-red-400">Falha ao entrar. Redirecionando...</p>}
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[var(--global-bg)] flex flex-col items-center justify-center gap-4 text-white">
+          <Loader2 size={40} className="animate-spin text-primary" />
+          <p className="text-white/60">Confirmando login...</p>
+        </div>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

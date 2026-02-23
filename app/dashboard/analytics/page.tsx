@@ -12,7 +12,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  ArrowLeft,
   TrendingUp,
   TrendingDown,
   Check,
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Plus_Jakarta_Sans, DM_Mono } from "next/font/google";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -129,9 +129,9 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#193322] border border-[#13ec5b]/20 rounded-xl px-3 py-2 shadow-xl">
-      <p className="text-white/50 text-xs mb-0.5">{label}</p>
-      <p className="text-[#13ec5b] font-bold text-sm">
+    <div className="bg-dash-surface border border-dash-border rounded-xl px-3 py-2 shadow-xl">
+      <p className="text-dash-text-muted text-xs mb-0.5">{label}</p>
+      <p className="text-dash-primary font-bold text-sm">
         R$ {payload[0].value.toLocaleString("pt-BR")}
       </p>
     </div>
@@ -155,23 +155,11 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div
-      className={`${jakarta.variable} ${mono.variable} font-[family-name:var(--font-jakarta)] bg-[#102216] min-h-screen text-white pb-28`}
-    >
-      <header className="sticky top-0 z-50 bg-[#102216]/85 backdrop-blur-md border-b border-white/8">
-        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
-          <Link
-            href="/dashboard"
-            className="h-10 w-10 flex items-center justify-start"
-          >
-            <ArrowLeft size={22} className="text-white/70" />
-          </Link>
-          <h1 className="text-base font-bold">Estatísticas</h1>
-          <button type="button" className="h-10 w-10 flex items-center justify-center">
-            <Calendar size={18} className="text-white/50" />
-          </button>
-        </div>
-      </header>
+    <div className={`${jakarta.variable} ${mono.variable} font-[family-name:var(--font-jakarta)] min-h-screen bg-dash-bg text-dash-text pb-28`}>
+      <DashboardPageHeader
+        title="Estatísticas"
+        right={<button type="button" className="p-2"><Calendar size={18} className="text-dash-text-muted" /></button>}
+      />
 
       <main className="max-w-md mx-auto">
         <div className="px-4 py-4">

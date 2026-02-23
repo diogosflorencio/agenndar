@@ -20,7 +20,7 @@ import Link from "next/link";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/lib/supabase/client";
-import BottomNavigation from "@/components/dashboard/BottomNavigation";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -165,15 +165,7 @@ export default function ContaPage() {
 
   return (
     <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen pb-32 bg-dash-bg text-dash-text`}>
-      <header className="sticky top-0 z-50 bg-dash-surface/95 backdrop-blur-md border-b border-dash-border">
-        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
-          <Link href="/dashboard" className="h-10 w-10 flex items-center justify-start text-dash-text-muted hover:text-dash-text">
-            <ArrowLeft size={22} />
-          </Link>
-          <h1 className="text-base font-bold text-dash-text">Personalização</h1>
-          <div className="w-10" />
-        </div>
-      </header>
+      <DashboardPageHeader title="Personalização" />
 
       <main className="max-w-md mx-auto">
         <section className="flex flex-col items-center py-8 px-6">
@@ -440,7 +432,6 @@ export default function ContaPage() {
         </div>
       </div>
 
-      <BottomNavigation currentRoute="conta" />
     </div>
   );
 }

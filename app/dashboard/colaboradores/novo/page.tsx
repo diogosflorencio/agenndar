@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { supabase } from "@/lib/supabase/client";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -55,22 +55,12 @@ export default function NovoColaboradorPage() {
   };
 
   return (
-    <div
-      className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] bg-[#102216] min-h-screen text-white`}
-    >
-      <header className="sticky top-0 z-50 bg-[#102216]/85 backdrop-blur-md border-b border-white/8">
-        <div className="flex items-center px-4 h-14 max-w-md mx-auto">
-          <Link href="/dashboard/colaboradores" className="h-10 w-10 flex items-center justify-start">
-            <ArrowLeft size={22} className="text-white/70" />
-          </Link>
-          <h1 className="text-base font-bold flex-1 text-center pr-10">Novo Colaborador</h1>
-        </div>
-      </header>
-
+    <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen bg-dash-bg text-dash-text pb-24`}>
+      <DashboardPageHeader title="Novo Colaborador" backHref="/dashboard/colaboradores" />
       <main className="max-w-md mx-auto px-4 py-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
+            <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">
               Nome
             </label>
             <input
@@ -78,12 +68,12 @@ export default function NovoColaboradorPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nome completo"
-              className="w-full h-12 bg-[#193322] border border-[#326744]/50 rounded-xl px-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#13ec5b]/60"
+              className="w-full h-12 bg-dash-surface border border-dash-border rounded-xl px-4 text-dash-text placeholder:text-dash-text-muted focus:outline-none focus:border-dash-primary"
               required
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
+            <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">
               Telefone (opcional)
             </label>
             <input
@@ -91,13 +81,13 @@ export default function NovoColaboradorPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+55 (11) 99999-9999"
-              className="w-full h-12 bg-[#193322] border border-[#326744]/50 rounded-xl px-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#13ec5b]/60"
+              className="w-full h-12 bg-dash-surface border border-dash-border rounded-xl px-4 text-dash-text placeholder:text-dash-text-muted focus:outline-none focus:border-dash-primary"
             />
           </div>
           <button
             type="submit"
             disabled={loading || !name.trim()}
-            className="w-full h-14 bg-[#13ec5b] text-[#102216] font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full h-14 bg-dash-primary text-white font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? "Salvando..." : "Criar e configurar serviços"}
           </button>

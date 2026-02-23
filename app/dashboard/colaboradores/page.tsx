@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, ChevronRight } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { supabase } from "@/lib/supabase/client";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -62,54 +63,43 @@ export default function ColaboradoresPage() {
   }, []);
 
   return (
-    <div
-      className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] bg-[#102216] min-h-screen text-white pb-28`}
-    >
-      <header className="sticky top-0 z-50 bg-[#102216]/85 backdrop-blur-md border-b border-white/8">
-        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
-          <Link href="/dashboard" className="h-10 w-10 flex items-center justify-start">
-            <ArrowLeft size={22} className="text-white/70" />
-          </Link>
-          <h1 className="text-base font-bold">Colaboradores</h1>
-          <div className="w-10" />
-        </div>
-      </header>
-
+    <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen bg-dash-bg text-dash-text pb-28`}>
+      <DashboardPageHeader title="Colaboradores" />
       <main className="max-w-md mx-auto px-4 pt-5">
         <Link
           href="/dashboard/colaboradores/novo"
-          className="w-full h-14 bg-[#13ec5b] text-[#102216] font-bold rounded-2xl flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(19,236,91,0.15)] mb-7"
+          className="w-full h-14 bg-dash-primary text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg mb-7"
         >
           <Plus size={20} strokeWidth={2.5} />
           Adicionar Colaborador
         </Link>
 
-        <p className="text-xs font-bold uppercase tracking-wider text-[#13ec5b]/60 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-dash-primary mb-4">
           Equipe ({list.length})
         </p>
 
         {loading ? (
-          <p className="text-white/50 text-sm">Carregando...</p>
+          <p className="text-dash-text-muted text-sm">Carregando...</p>
         ) : list.length === 0 ? (
-          <p className="text-white/50 text-sm">Nenhum colaborador. Adicione o primeiro acima.</p>
+          <p className="text-dash-text-muted text-sm">Nenhum colaborador. Adicione o primeiro acima.</p>
         ) : (
           <div className="space-y-2">
             {list.map((c) => (
               <Link
                 key={c.id}
                 href={`/dashboard/colaboradores/${c.id}/servicos`}
-                className="flex items-center justify-between p-4 bg-[#193322] border border-[#326744]/50 rounded-xl active:opacity-70 transition-opacity"
+                className="flex items-center justify-between p-4 bg-dash-surface border border-dash-border rounded-xl active:opacity-70 transition-opacity hover:bg-dash-surface-hover"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#13ec5b]/30 to-[#193322] border-2 border-[#13ec5b]/30 flex items-center justify-center shrink-0">
-                    <span className="text-sm font-bold text-[#13ec5b]">{c.initials}</span>
+                  <div className="w-12 h-12 rounded-full bg-dash-primary-bg border-2 border-dash-primary/30 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold text-dash-primary">{c.initials}</span>
                   </div>
                   <div>
-                    <p className="font-semibold text-white">{c.name}</p>
-                    <p className="text-xs text-white/40">Toque para configurar serviços</p>
+                    <p className="font-semibold text-dash-text">{c.name}</p>
+                    <p className="text-xs text-dash-text-muted">Toque para configurar serviços</p>
                   </div>
                 </div>
-                <ChevronRight size={18} className="text-white/25" />
+                <ChevronRight size={18} className="text-dash-text-muted" />
               </Link>
             ))}
           </div>

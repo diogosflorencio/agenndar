@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   Plus,
   Edit2,
   Trash2,
@@ -17,6 +16,7 @@ import {
 import Link from "next/link";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { supabase } from "@/lib/supabase/client";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -73,28 +73,28 @@ function ServiceModal({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-        className="bg-[#102216] w-full max-w-md rounded-t-3xl border-t border-white/10 pb-safe"
+        className="bg-dash-surface w-full max-w-md rounded-t-3xl border-t border-dash-border pb-safe"
       >
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 rounded-full bg-white/20" />
+          <div className="w-10 h-1 rounded-full bg-dash-border" />
         </div>
 
-        <div className="flex items-center justify-between px-5 pb-4 border-b border-white/8">
-          <h2 className="text-lg font-bold">
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-dash-border">
+          <h2 className="text-lg font-bold text-dash-text">
             {service ? "Editar Serviço" : "Novo Serviço"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="h-8 w-8 flex items-center justify-center rounded-full bg-white/8"
+            className="h-8 w-8 flex items-center justify-center rounded-full bg-dash-surface-hover"
           >
-            <X size={16} className="text-white/60" />
+            <X size={16} className="text-dash-text-muted" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
           <div>
-            <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
+            <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">
               Nome do Serviço
             </label>
             <input
@@ -102,19 +102,19 @@ function ServiceModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Corte Social"
-              className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white placeholder:text-white/25 text-[15px] font-medium focus:outline-none focus:border-[#13ec5b]/60 transition-all"
+              className="w-full h-12 bg-dash-bg border border-dash-border rounded-xl px-4 text-dash-text placeholder:text-dash-text-muted text-[15px] font-medium focus:outline-none focus:border-dash-primary transition-all"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">
                 Preço (R$)
               </label>
               <div className="relative">
                 <DollarSign
                   size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#13ec5b]/60"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-dash-primary"
                 />
                 <input
                   type="number"
@@ -122,30 +122,30 @@ function ServiceModal({
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="0,00"
                   min={0}
-                  className="w-full h-12 bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 text-white placeholder:text-white/25 text-[15px] font-medium focus:outline-none focus:border-[#13ec5b]/60 transition-all"
+                  className="w-full h-12 bg-dash-bg border border-dash-border rounded-xl pl-8 pr-4 text-dash-text placeholder:text-dash-text-muted text-[15px] font-medium focus:outline-none focus:border-dash-primary transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-white/50 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">
                 Duração
               </label>
               <div className="relative">
                 <Clock
                   size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#13ec5b]/60 z-10"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-dash-primary z-10"
                 />
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="w-full h-12 bg-white/5 border border-white/10 rounded-xl pl-8 pr-8 text-white text-[15px] font-medium focus:outline-none focus:border-[#13ec5b]/60 transition-all appearance-none"
+                  className="w-full h-12 bg-dash-bg border border-dash-border rounded-xl pl-8 pr-8 text-dash-text text-[15px] font-medium focus:outline-none focus:border-dash-primary transition-all appearance-none"
                 >
                   {DURATION_OPTIONS.map((d) => (
                     <option
                       key={d}
                       value={d}
-                      className="bg-[#102216]"
+                      className="bg-dash-bg"
                     >
                       {formatDuration(d)}
                     </option>
@@ -153,7 +153,7 @@ function ServiceModal({
                 </select>
                 <ChevronDown
                   size={14}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-dash-text-muted pointer-events-none"
                 />
               </div>
             </div>
@@ -173,8 +173,8 @@ function ServiceModal({
             disabled={!valid}
             className={`w-full h-14 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
               valid
-                ? "bg-[#13ec5b] text-[#102216]"
-                : "bg-white/8 text-white/25 cursor-not-allowed"
+                ? "bg-dash-primary text-white"
+                : "bg-dash-surface-hover text-dash-text-muted cursor-not-allowed"
             }`}
           >
             <Check size={18} />
@@ -206,7 +206,7 @@ function DeleteConfirm({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[#193322] border border-white/10 rounded-2xl p-6 w-full max-w-sm"
+        className="bg-dash-surface border border-dash-border rounded-2xl p-6 w-full max-w-sm"
       >
         <div className="w-12 h-12 rounded-full bg-red-500/15 flex items-center justify-center mx-auto mb-4">
           <Trash2 size={22} className="text-red-400" />
@@ -214,15 +214,15 @@ function DeleteConfirm({
         <h3 className="text-lg font-bold text-center mb-2">
           Remover serviço?
         </h3>
-        <p className="text-sm text-white/50 text-center mb-6">
-          &quot;<span className="text-white font-medium">{name}</span>&quot; será
+        <p className="text-sm text-dash-text-muted text-center mb-6">
+          &quot;<span className="text-dash-text font-medium">{name}</span>&quot; será
           removido da sua lista. Agendamentos existentes não serão afetados.
         </p>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 h-12 rounded-xl border border-white/10 font-semibold text-white/60 hover:bg-white/5 transition-colors"
+            className="flex-1 h-12 rounded-xl border border-dash-border font-semibold text-dash-text-muted hover:bg-dash-surface-hover transition-colors"
           >
             Cancelar
           </button>
@@ -329,39 +329,25 @@ export default function ServicosPage() {
   };
 
   return (
-    <div
-      className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] bg-[#102216] min-h-screen text-white pb-28`}
-    >
-      <header className="sticky top-0 z-50 bg-[#102216]/85 backdrop-blur-md border-b border-white/8">
-        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
-          <Link
-            href="/dashboard"
-            className="h-10 w-10 flex items-center justify-start"
-          >
-            <ArrowLeft size={22} className="text-white/70" />
-          </Link>
-          <h1 className="text-base font-bold">Gestão de Serviços</h1>
-          <div className="w-10" />
-        </div>
-      </header>
-
+    <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen bg-dash-bg text-dash-text pb-28`}>
+      <DashboardPageHeader title="Gestão de Serviços" />
       <main className="max-w-md mx-auto px-4 pt-5">
         <motion.button
           type="button"
           whileTap={{ scale: 0.97 }}
           onClick={() => setModal("add")}
-          className="w-full h-14 bg-[#13ec5b] text-[#102216] font-bold rounded-2xl flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(19,236,91,0.15)] mb-7"
+          className="w-full h-14 bg-dash-primary text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg mb-7"
         >
           <Plus size={20} strokeWidth={2.5} />
           Adicionar Novo Serviço
         </motion.button>
 
-        <p className="text-xs font-bold uppercase tracking-wider text-[#13ec5b]/60 mb-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-dash-primary mb-4">
           Seus Serviços ({services.length})
         </p>
 
         {loading ? (
-          <p className="text-white/50 text-sm">Carregando...</p>
+          <p className="text-dash-text-muted text-sm">Carregando...</p>
         ) : (
           <div className="space-y-3">
             <AnimatePresence initial={false}>
@@ -372,17 +358,17 @@ export default function ServicosPage() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -40, transition: { duration: 0.2 } }}
-                  className="bg-[#193322] border border-[#326744]/50 p-5 rounded-2xl flex items-center justify-between"
+                  className="bg-dash-surface border border-dash-border p-5 rounded-2xl flex items-center justify-between"
                 >
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-white mb-1.5 truncate">
+                    <h3 className="text-base font-bold text-dash-text mb-1.5 truncate">
                       {s.name}
                     </h3>
                     <div className="flex items-center gap-4">
-                      <span className="text-[#13ec5b] font-bold text-lg leading-none">
+                      <span className="text-dash-primary font-bold text-lg leading-none">
                         {formatPrice(s.price)}
                       </span>
-                      <div className="flex items-center gap-1 text-white/40 text-sm">
+                      <div className="flex items-center gap-1 text-dash-text-muted text-sm">
                         <Clock size={13} />
                         <span>{formatDuration(s.duration)}</span>
                       </div>
@@ -392,14 +378,14 @@ export default function ServicosPage() {
                     <button
                       type="button"
                       onClick={() => setModal(s)}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-[#13ec5b] transition-colors"
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-dash-surface-hover hover:bg-dash-border text-dash-text-muted hover:text-dash-primary transition-colors"
                     >
                       <Edit2 size={15} />
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleting(s)}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-red-500/15 text-white/50 hover:text-red-400 transition-colors"
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-dash-surface-hover hover:bg-red-500/15 text-dash-text-muted hover:text-red-500 transition-colors"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -410,13 +396,13 @@ export default function ServicosPage() {
           </div>
         )}
 
-        <div className="mt-8 p-4 bg-[#13ec5b]/5 rounded-2xl border border-[#13ec5b]/10 flex items-start gap-3">
-          <Info size={18} className="text-[#13ec5b] shrink-0 mt-0.5" />
+        <div className="mt-8 p-4 bg-dash-primary-bg rounded-2xl border border-dash-border flex items-start gap-3">
+          <Info size={18} className="text-dash-primary shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-white mb-1">
+            <p className="text-sm font-bold text-dash-text mb-1">
               Dica do Agenndar
             </p>
-            <p className="text-xs text-white/45 leading-relaxed">
+            <p className="text-xs text-dash-text-muted leading-relaxed">
               Combine serviços populares em &quot;Combos&quot; para incentivar
               seus clientes a agendar pacotes completos e aumentar seu ticket
               médio.

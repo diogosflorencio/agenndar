@@ -8,7 +8,6 @@ import { ptBR } from 'date-fns/locale'
 import MetricsCards from '@/components/dashboard/MetricsCards'
 import TodayAppointments from '@/components/dashboard/TodayAppointments'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
-import BottomNavigation from '@/components/dashboard/BottomNavigation'
 
 interface User {
   id: string
@@ -197,7 +196,6 @@ export default function DashboardPage() {
         />
       </main>
 
-      <BottomNavigation currentRoute="dashboard" />
     </div>
   )
 }

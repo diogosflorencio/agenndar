@@ -31,6 +31,18 @@
   --dash-primary-bg: #d1fae5;
 }
 
+/* Tema escuro: dashboard */
+.theme-dashboard.theme-dashboard-dark {
+  --dash-bg: #0f1c15;
+  --dash-surface: #14221A;
+  --dash-surface-hover: #1a2e24;
+  --dash-border: #213428;
+  --dash-text: #ffffff;
+  --dash-text-muted: #8fa898;
+  --dash-primary: #13ec5b;
+  --dash-primary-bg: rgba(19, 236, 91, 0.15);
+}
+
 * {
   margin: 0;
   padding: 0;

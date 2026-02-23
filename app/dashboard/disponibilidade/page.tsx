@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -30,6 +29,7 @@ import {
 import { ptBR } from "date-fns/locale";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { supabase } from "@/lib/supabase/client";
+import DashboardPageHeader from "@/components/dashboard/DashboardPageHeader";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -279,56 +279,37 @@ export default function DisponibilidadePage() {
   const selectedLabel = format(selectedDate, "EEEE, dd MMM", { locale: ptBR });
 
   return (
-    <div
-      className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] bg-[#102216] min-h-screen text-white pb-32`}
-    >
-      <header className="sticky top-0 z-50 bg-[#102216]/85 backdrop-blur-md border-b border-white/8">
-        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
-          <Link
-            href="/dashboard"
-            className="h-10 w-10 flex items-center justify-start"
-          >
-            <ArrowLeft size={22} className="text-white/70" />
-          </Link>
-          <h1 className="text-base font-bold">Configurar Disponibilidade</h1>
-          <button
-            type="button"
-            className="h-10 w-10 flex items-center justify-center"
-          >
-            <HelpCircle size={18} className="text-white/40" />
-          </button>
-        </div>
-      </header>
-
+    <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen bg-dash-bg text-dash-text pb-32`}>
+      <DashboardPageHeader
+        title="Configurar Disponibilidade"
+        right={<button type="button" className="p-2"><HelpCircle size={18} className="text-dash-text-muted" /></button>}
+      />
       <main className="max-w-md mx-auto">
         <div className="p-4">
-          <div className="bg-[#193322] border border-[#326744]/50 rounded-2xl p-3">
+          <div className="bg-dash-surface border border-dash-border rounded-2xl p-3">
             <div className="flex items-center justify-between px-2 py-2 mb-1">
               <button
                 type="button"
                 onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-white/8 transition-colors"
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-dash-surface-hover transition-colors"
               >
-                <ChevronLeft size={18} className="text-white/60" />
+                <ChevronLeft size={18} className="text-dash-text-muted" />
               </button>
-              <p className="font-bold text-sm capitalize">
+              <p className="font-bold text-sm capitalize text-dash-text">
                 {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
               </p>
               <button
                 type="button"
                 onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-white/8 transition-colors"
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-dash-surface-hover transition-colors"
               >
-                <ChevronRight size={18} className="text-white/60" />
+                <ChevronRight size={18} className="text-dash-text-muted" />
               </button>
             </div>
 
             <div className="grid grid-cols-7 text-center mb-1">
               {["D", "S", "T", "Q", "Q", "S", "S"].map((d, i) => (
-                <p
-                  key={i}
-                  className="text-[10px] font-bold text-white/30 py-2"
-                >
+                <p key={i} className="text-[10px] font-bold text-dash-text-muted py-2">
                   {d}
                 </p>
               ))}
@@ -354,18 +335,18 @@ export default function DisponibilidadePage() {
                     disabled={isPast}
                     className={`h-11 relative flex items-center justify-center text-sm font-medium transition-all ${
                       isPast
-                        ? "text-white/15 cursor-default"
+                        ? "text-dash-text-muted/50 cursor-default"
                         : isSelected
-                        ? "text-[#102216]"
+                        ? "text-white"
                         : isOff
-                        ? "text-white/25"
-                        : "text-white hover:bg-white/8"
+                        ? "text-dash-text-muted"
+                        : "text-dash-text hover:bg-dash-surface-hover"
                     }`}
                   >
                     {isSelected && (
                       <motion.div
                         layoutId="cal-sel"
-                        className="absolute inset-1 rounded-xl bg-[#13ec5b]"
+                        className="absolute inset-1 rounded-xl bg-dash-primary"
                         transition={{
                           type: "spring",
                           damping: 28,
@@ -374,7 +355,7 @@ export default function DisponibilidadePage() {
                       />
                     )}
                     {isToday(day) && !isSelected && (
-                      <div className="absolute inset-1 rounded-xl border border-[#13ec5b]/40 bg-[#13ec5b]/8" />
+                      <div className="absolute inset-1 rounded-xl border border-dash-primary/40 bg-dash-primary-bg" />
                     )}
                     <span className="relative z-10 font-semibold">
                       {format(day, "d")}

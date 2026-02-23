@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import DashboardThemeProvider from "@/components/dashboard/DashboardThemeProvider";
+import { DashboardThemeProvider } from "@/components/dashboard/DashboardThemeProvider";
 import ThemeToggle from "@/components/dashboard/ThemeToggle";
 
 export default function DashboardLayout({

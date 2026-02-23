@@ -26,14 +26,14 @@ export default function LoginPage() {
   }, [errorParam]);
 
   async function handleGoogleLogin() {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
+    const db = getSupabaseClient();
+    if (!db) {
       setError("Supabase não configurado.");
       return;
     }
     setError(null);
     setLoading("google");
-    const { error: err } = await supabase.auth.signInWithOAuth({
+    const { error: err } = await db.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback?next=${encodeURIComponent(next)}` },
     });
@@ -45,14 +45,14 @@ export default function LoginPage() {
 
   async function handleDemoLogin(e: React.FormEvent) {
     e.preventDefault();
-    const supabase = getSupabaseClient();
-    if (!supabase) {
+    const db = getSupabaseClient();
+    if (!db) {
       setError("Supabase não configurado.");
       return;
     }
     setError(null);
     setLoading("demo");
-    const { data, error: err } = await supabase.auth.signInWithPassword({
+    const { data, error: err } = await db.auth.signInWithPassword({
       email: demoEmail.trim(),
       password: demoPassword,
     });
@@ -62,7 +62,7 @@ export default function LoginPage() {
       return;
     }
     if (data.user) {
-      const { data: dbUser } = await supabase
+      const { data: dbUser } = await db
         .from("users")
         .select("id")
         .eq("firebase_uid", data.user.id)

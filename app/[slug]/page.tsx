@@ -548,14 +548,15 @@ export default function PublicBookingPage() {
   }, [provider?.id, selectedService, selectedCollab, selectedDate, service?.duration_minutes]);
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const db = supabase;
+    if (!db) return;
+    db.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         setIsLoggedIn(false);
         setClientId(null);
         return;
       }
-      supabase
+      db
         .from("clients")
         .select("id")
         .eq("firebase_uid", user.id)
@@ -567,14 +568,14 @@ export default function PublicBookingPage() {
     });
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = db.auth.onAuthStateChange((_event, session) => {
       if (!session?.user) {
         setIsLoggedIn(false);
         setClientId(null);
         setShowNameModal(false);
         return;
       }
-      supabase
+      db
         .from("clients")
         .select("id")
         .eq("firebase_uid", session.user.id)
@@ -613,9 +614,10 @@ export default function PublicBookingPage() {
   const canBookAndLoggedIn = canBook && isLoggedIn && clientId;
 
   const handleLogin = useCallback(async () => {
-    if (!supabase || !canBook) return;
+    const db = supabase;
+    if (!db || !canBook) return;
     setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await db.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.href },
     });
@@ -628,13 +630,14 @@ export default function PublicBookingPage() {
 
   const handleSaveCustomer = useCallback(
     async (name: string, phone: string) => {
-      if (!supabase) return;
+      const db = supabase;
+      if (!db) return;
       const {
         data: { user: authUser },
-      } = await supabase.auth.getUser();
+      } = await db.auth.getUser();
       if (!authUser) return;
       const normalizedPhone = phone.replace(/\D/g, "");
-      const { data: newClient, error } = await supabase
+      const { data: newClient, error } = await db
         .from("clients")
         .insert({
           firebase_uid: authUser.id,

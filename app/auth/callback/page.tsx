@@ -12,19 +12,19 @@ export default function AuthCallbackPage() {
   const [status, setStatus] = useState<"loading" | "done" | "error">("loading");
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
+    const db = getSupabaseClient();
+    if (!db) {
       router.replace("/login?error=config");
       return;
     }
     const checkUser = () => {
-      supabase.auth.getUser().then(({ data: { user } }) => {
+      db.auth.getUser().then(({ data: { user } }) => {
         if (!user) {
           setStatus("error");
           setTimeout(() => router.replace("/login"), 2000);
           return;
         }
-        supabase.from("users").select("id").eq("firebase_uid", user.id).maybeSingle().then(({ data }) => {
+        db.from("users").select("id").eq("firebase_uid", user.id).maybeSingle().then(({ data }) => {
           setStatus("done");
           if (data) router.replace(next);
           else router.replace("/setup");
@@ -32,7 +32,7 @@ export default function AuthCallbackPage() {
       });
     };
     const t = setTimeout(checkUser, 800);
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: { subscription } } = db.auth.onAuthStateChange((_e, session) => {
       if (session?.user) {
         clearTimeout(t);
         checkUser();

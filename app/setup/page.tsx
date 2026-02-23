@@ -653,7 +653,8 @@ export default function OnboardingPage() {
 
   const saveAndRedirect = useCallback(
     async (skipPaidPlan: boolean) => {
-      if (!supabase) {
+      const db = supabase;
+      if (!db) {
         alert(
           "Configuração do Supabase não encontrada. Configure as variáveis de ambiente."
         );
@@ -664,7 +665,7 @@ export default function OnboardingPage() {
       try {
         const {
           data: { user: authUser },
-        } = await supabase.auth.getUser();
+        } = await db.auth.getUser();
 
         if (!authUser) {
           router.push("/login");
@@ -673,7 +674,7 @@ export default function OnboardingPage() {
 
         const slug = slugify(data.businessName);
 
-        const { data: userRow, error: userError } = await supabase
+        const { data: userRow, error: userError } = await db
           .from("users")
           .select("id")
           .eq("firebase_uid", authUser.id)
@@ -685,7 +686,7 @@ export default function OnboardingPage() {
 
         if (userRow?.id) {
           userId = userRow.id;
-          await supabase
+          await db
             .from("users")
             .update({
               business_name: data.businessName.trim(),
@@ -696,7 +697,7 @@ export default function OnboardingPage() {
             .eq("id", userId);
         } else {
           const uniqueSlug = slug + "-" + Date.now().toString(36);
-          const { data: newUser, error: insertError } = await supabase
+          const { data: newUser, error: insertError } = await db
             .from("users")
             .insert({
               firebase_uid: authUser.id,
@@ -712,7 +713,7 @@ export default function OnboardingPage() {
           userId = newUser.id;
         }
 
-        const { error: onboardingError } = await supabase
+        const { error: onboardingError } = await db
           .from("user_onboarding")
           .upsert(
             {

@@ -83,10 +83,11 @@ export default function ContaPage() {
   const publicUrl = `${baseUrl}/${slug}`;
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const db = supabase;
+    if (!db) return;
+    db.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      supabase
+      db
         .from("users")
         .select("business_name, phone, slug, avatar_url")
         .eq("firebase_uid", user.id)
@@ -107,7 +108,8 @@ export default function ContaPage() {
   };
 
   const handleSave = async () => {
-    if (!supabase) {
+    const db = supabase;
+    if (!db) {
       alert("Supabase não configurado.");
       return;
     }
@@ -120,12 +122,12 @@ export default function ContaPage() {
     try {
       const {
         data: { user: authUser },
-      } = await supabase.auth.getUser();
+      } = await db.auth.getUser();
       if (!authUser) {
         alert("Faça login para salvar.");
         return;
       }
-      const { error } = await supabase
+      const { error } = await db
         .from("users")
         .update({
           business_name: businessName.trim(),

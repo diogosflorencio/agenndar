@@ -125,10 +125,11 @@ export default function DisponibilidadePage() {
   const today = startOfDay(new Date());
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const db = supabase;
+    if (!db) return;
+    db.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      supabase
+      db
         .from("users")
         .select("id")
         .eq("firebase_uid", user.id)
@@ -186,7 +187,8 @@ export default function DisponibilidadePage() {
   };
 
   const handleSave = async () => {
-    if (!supabase || !userId) return;
+    const db = supabase;
+    if (!db || !userId) return;
     setSaving(true);
     try {
       const key = dateKey(selectedDate);
@@ -194,7 +196,7 @@ export default function DisponibilidadePage() {
       const dayOfWeek = getDay(selectedDate);
 
       if (c.isOff) {
-        await supabase.from("availability_overrides").upsert(
+        await db.from("availability_overrides").upsert(
           {
             user_id: userId,
             date: key,
@@ -206,7 +208,7 @@ export default function DisponibilidadePage() {
           { onConflict: "user_id,date" }
         );
       } else {
-        await supabase.from("availability_overrides").upsert(
+        await db.from("availability_overrides").upsert(
           {
             user_id: userId,
             date: key,
@@ -219,18 +221,18 @@ export default function DisponibilidadePage() {
         );
       }
 
-      const { data: settings } = await supabase
+      const { data: settings } = await db
         .from("user_settings")
         .select("id")
         .eq("user_id", userId)
         .single();
       if (settings?.id) {
-        await supabase
+        await db
           .from("user_settings")
           .update({ buffer_minutes: buffer, updated_at: new Date().toISOString() })
           .eq("id", settings.id);
       } else {
-        await supabase.from("user_settings").insert({
+        await db.from("user_settings").insert({
           user_id: userId,
           buffer_minutes: buffer,
         });
@@ -247,7 +249,8 @@ export default function DisponibilidadePage() {
   };
 
   const handleApplyAll = async () => {
-    if (!supabase || !userId) return;
+    const db = supabase;
+    if (!db || !userId) return;
     const dayOfWeek = getDay(selectedDate);
     const c = configs[dateKey(selectedDate)] ?? defaultConfig();
     if (c.isOff) {
@@ -255,7 +258,7 @@ export default function DisponibilidadePage() {
       return;
     }
     try {
-      await supabase.from("availability").upsert(
+      await db.from("availability").upsert(
         {
           user_id: userId,
           day_of_week: dayOfWeek,

@@ -247,19 +247,20 @@ export default function ServicosPage() {
   const [loading, setLoading] = useState(true);
 
   const loadServices = async () => {
-    if (!supabase) return;
+    const db = supabase;
+    if (!db) return;
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await db.auth.getUser();
     if (!user) return;
-    const { data: userRow } = await supabase
+    const { data: userRow } = await db
       .from("users")
       .select("id")
       .eq("firebase_uid", user.id)
       .single();
     if (!userRow?.id) return;
     setUserId(userRow.id);
-    const { data } = await supabase
+    const { data } = await db
       .from("services")
       .select("id, name, price, duration_minutes")
       .eq("user_id", userRow.id)
@@ -281,10 +282,11 @@ export default function ServicosPage() {
   }, []);
 
   const handleSave = async (data: Omit<Service, "id">) => {
-    if (!supabase || !userId) return;
+    const db = supabase;
+    if (!db || !userId) return;
     try {
       if (modal === "add") {
-        await supabase.from("services").insert({
+        await db.from("services").insert({
           user_id: userId,
           name: data.name,
           price: data.price,
@@ -292,7 +294,7 @@ export default function ServicosPage() {
           is_active: true,
         });
       } else if (modal && typeof modal === "object") {
-        await supabase
+        await db
           .from("services")
           .update({
             name: data.name,
@@ -311,9 +313,10 @@ export default function ServicosPage() {
   };
 
   const handleDelete = async (s: Service) => {
-    if (!supabase) return;
+    const db = supabase;
+    if (!db) return;
     try {
-      await supabase
+      await db
         .from("services")
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq("id", s.id);

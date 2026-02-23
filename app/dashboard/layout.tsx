@@ -15,13 +15,13 @@ export default function DashboardLayout({
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
+    const db = getSupabaseClient();
+    if (!db) {
       setChecking(false);
       router.replace("/login?error=config");
       return;
     }
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    db.auth.getUser().then(({ data: { user } }) => {
       setChecking(false);
       if (user) {
         setAllowed(true);

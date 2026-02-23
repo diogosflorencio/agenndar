@@ -65,20 +65,21 @@ export default function VinculoServicosPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!supabase || !collaboratorId) return;
+    const db = supabase;
+    if (!db || !collaboratorId) return;
     (async () => {
       const {
         data: { user: authUser },
-      } = await supabase.auth.getUser();
+      } = await db.auth.getUser();
       if (!authUser) return;
-      const { data: userRow } = await supabase
+      const { data: userRow } = await db
         .from("users")
         .select("id")
         .eq("firebase_uid", authUser.id)
         .single();
       if (!userRow?.id) return;
 
-      const { data: coll } = await supabase
+      const { data: coll } = await db
         .from("collaborators")
         .select("id, name")
         .eq("id", collaboratorId)
@@ -96,7 +97,7 @@ export default function VinculoServicosPage() {
           .toUpperCase(),
       });
 
-      const { data: svcList } = await supabase
+      const { data: svcList } = await db
         .from("services")
         .select("id, name, duration_minutes, price")
         .eq("user_id", userRow.id)
@@ -112,11 +113,11 @@ export default function VinculoServicosPage() {
         }))
       );
 
-      const { data: links } = await supabase
+      const { data: links } = await db
         .from("service_collaborators")
         .select("service_id")
         .eq("collaborator_id", collaboratorId);
-      setSelected(new Set((links ?? []).map((l) => l.service_id)));
+      setSelected(new Set((links ?? []).map((l: { service_id: string }) => l.service_id)));
       setLoading(false);
     })();
   }, [collaboratorId]);
@@ -154,15 +155,16 @@ export default function VinculoServicosPage() {
   };
 
   const handleSave = async () => {
-    if (!supabase) return;
+    const db = supabase;
+    if (!db) return;
     setSaving(true);
     try {
-      await supabase
+      await db
         .from("service_collaborators")
         .delete()
         .eq("collaborator_id", collaboratorId);
       if (selected.size > 0) {
-        await supabase.from("service_collaborators").insert(
+        await db.from("service_collaborators").insert(
           [...selected].map((service_id) => ({
             service_id,
             collaborator_id: collaboratorId,

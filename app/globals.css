@@ -7,6 +7,28 @@
 
 :root {
   --font-inter: 'Inter', sans-serif;
+  /* Tema global: verde escuro (landing, página pública, login) */
+  --global-bg: #020403;
+  --global-bg-alt: #0B120E;
+  --global-surface: #0f1c15;
+  --global-surface-elevated: #14221A;
+  --global-border: #1a2e24;
+  --global-text: #ffffff;
+  --global-text-muted: #8fa898;
+  --global-primary: #13ec5b;
+  --global-primary-dim: rgba(19, 236, 91, 0.15);
+}
+
+/* Tema claro: dashboard */
+.theme-dashboard {
+  --dash-bg: #f0f7f2;
+  --dash-surface: #ffffff;
+  --dash-surface-hover: #e8f5ec;
+  --dash-border: #d1e7d8;
+  --dash-text: #0f2318;
+  --dash-text-muted: #4a6b56;
+  --dash-primary: #059669;
+  --dash-primary-bg: #d1fae5;
 }
 
 * {
@@ -21,29 +43,47 @@ html {
 
 body {
   font-family: var(--font-inter);
-  background-color: #020403;
-  color: #ffffff;
+  background-color: var(--global-bg);
+  color: var(--global-text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar customizada */
+.theme-dashboard {
+  background-color: var(--dash-bg);
+  color: var(--dash-text);
+  min-height: 100vh;
+}
+
+/* Scrollbar: global (verde escuro) */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020403;
+  background: var(--global-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1a2e24;
+  background: var(--global-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: var(--global-primary);
+}
+
+.theme-dashboard ::-webkit-scrollbar-track {
+  background: var(--dash-bg);
+}
+
+.theme-dashboard ::-webkit-scrollbar-thumb {
+  background: var(--dash-border);
+}
+
+.theme-dashboard ::-webkit-scrollbar-thumb:hover {
+  background: var(--dash-primary);
 }
 
 /* Remover scrollbar quando necessário */

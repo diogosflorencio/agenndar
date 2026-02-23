@@ -19,13 +19,13 @@ export default function BottomNavigation({ currentRoute }: BottomNavigationProps
     { icon: 'grid_view', label: 'Início', route: 'dashboard' },
     { icon: 'calendar_month', label: 'Agenda', route: 'agenda' },
     { icon: 'content_cut', label: 'Serviços', route: 'servicos' },
-    { icon: 'groups', label: 'Equipe', route: 'equipe' },
+    { icon: 'groups', label: 'Equipe', route: 'colaboradores' },
     { icon: 'person', label: 'Conta', route: 'conta' },
   ]
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 bg-background-dark/90 backdrop-blur-md border-t border-surface-border px-4 py-3 pb-8 flex justify-between items-center z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-dash-surface/95 backdrop-blur-md border-t border-dash-border px-4 py-3 pb-8 flex justify-between items-center z-50">
         {navItems.map((item) => {
           const active = isActive(item.route)
           return (
@@ -34,16 +34,16 @@ export default function BottomNavigation({ currentRoute }: BottomNavigationProps
               href={`/dashboard/${item.route}`}
               className="flex flex-col items-center gap-1.5 flex-1 group"
             >
-              <span 
+              <span
                 className={`material-symbols-outlined text-[24px] transition-colors ${
-                  active ? 'text-primary' : 'text-text-muted group-hover:text-white'
+                  active ? 'text-dash-primary' : 'text-dash-text-muted group-hover:text-dash-text'
                 }`}
               >
                 {item.icon}
               </span>
-              <span 
+              <span
                 className={`text-[10px] font-medium transition-colors ${
-                  active ? 'font-bold text-primary' : 'text-text-muted group-hover:text-white'
+                  active ? 'font-bold text-dash-primary' : 'text-dash-text-muted group-hover:text-dash-text'
                 }`}
               >
                 {item.label}
@@ -52,7 +52,7 @@ export default function BottomNavigation({ currentRoute }: BottomNavigationProps
           )
         })}
       </nav>
-      <div className="h-4 w-full fixed bottom-0 bg-background-dark/90 backdrop-blur-md z-50"></div>
+      <div className="h-4 w-full fixed bottom-0 bg-dash-surface/95 backdrop-blur-md z-50 pointer-events-none" />
     </>
   )
 }

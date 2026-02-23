@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -33,6 +34,7 @@ interface Schedule {
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [metrics, setMetrics] = useState({
@@ -66,15 +68,20 @@ export default function DashboardPage() {
         return
       }
       
-      // Buscar usuário atual (simulado - depois integrar com Firebase Auth)
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) return
+
       const { data: userData } = await supabase
         .from('users')
         .select('*')
-        .limit(1)
-        .single()
+        .eq('firebase_uid', authUser.id)
+        .maybeSingle()
 
-      if (userData) {
-        setUser(userData)
+      if (!userData) {
+        router.replace('/setup')
+        return
+      }
+      setUser(userData)
         
         // Buscar agendamentos do dia
         const today = format(new Date(), 'yyyy-MM-dd')
@@ -130,7 +137,6 @@ export default function DashboardPage() {
             canceladosChange: -5, // Simulado
           })
         }
-      }
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error)
     } finally {
@@ -162,14 +168,14 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="bg-background-dark min-h-screen flex items-center justify-center">
-        <div className="text-primary">Carregando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-dash-bg">
+        <div className="text-dash-primary font-medium">Carregando...</div>
       </div>
     )
   }
 
   return (
-    <div className="bg-background-dark min-h-screen text-white pb-28 antialiased selection:bg-primary/30">
+    <div className="min-h-screen bg-dash-bg text-dash-text pb-28 antialiased">
       <DashboardHeader 
         userName={user?.business_name || 'Usuário'}
         avatarUrl={user?.avatar_url}
@@ -178,8 +184,8 @@ export default function DashboardPage() {
       <MetricsCards metrics={metrics} />
       
       <div className="px-5 pt-6 pb-3 flex justify-between items-center">
-        <h3 className="text-white text-xl font-bold tracking-tight">Próximos do Dia</h3>
-        <span className="text-xs text-primary font-semibold px-3 py-1 bg-surface border border-surface-border rounded-full">
+        <h3 className="text-dash-text text-xl font-bold tracking-tight">Próximos do Dia</h3>
+        <span className="text-xs text-dash-primary font-semibold px-3 py-1 bg-dash-primary-bg border border-dash-border rounded-full">
           {format(new Date(), "dd 'de' MMM", { locale: ptBR })}
         </span>
       </div>

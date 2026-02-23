@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function HomePage() {
   return (
@@ -55,10 +54,13 @@ export default function HomePage() {
                 Teste Grátis por 7 Dias
                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </Link>
-              <button className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+              <Link
+                href="/demo"
+                className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+              >
                 <span className="material-symbols-outlined">play_circle</span>
                 Ver Demo
-              </button>
+              </Link>
             </div>
             
             <div className="pt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 text-sm text-gray-500 font-medium">
@@ -72,12 +74,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Mockup Mobile - Abaixo dos badges no mobile */}
+            {/* Mockup Mobile - mesmo conteúdo e nav do desktop */}
             <div className="lg:hidden relative mx-auto z-10 perspective-1000 mt-8">
-              <div className="relative w-[280px] h-[580px] bg-black rounded-[40px] border-[8px] border-gray-800 shadow-2xl overflow-hidden mx-auto transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
+              <div className="relative w-[280px] h-[580px] bg-black rounded-[40px] border-[8px] border-gray-800 shadow-2xl overflow-hidden mx-auto transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500 flex flex-col">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-b-2xl z-50"></div>
-                <div className="w-full h-full bg-[#0B120E] text-white flex flex-col relative overflow-hidden">
-                  <header className="pt-10 pb-4 px-5 bg-[#0B120E]/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
+                <div className="w-full h-full bg-[#0B120E] text-white flex flex-col relative">
+                  <header className="flex-shrink-0 pt-10 pb-4 px-4 bg-[#0B120E]/90 backdrop-blur-md border-b border-white/5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="size-10 rounded-full border-2 border-primary p-0.5">
@@ -94,69 +96,101 @@ export default function HomePage() {
                     </div>
                   </header>
                   
-                  <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
-                    <section className="px-5 py-4">
-                      <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                        <div className="flex-shrink-0 w-32 bg-[#14221A] border border-[#213428] rounded-xl p-3 flex flex-col gap-3">
-                          <div className="flex items-center gap-2 text-gray-400">
-                            <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                            <span className="text-xs font-medium">Agend.</span>
+                  <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
+                    <section className="px-4 py-3">
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                        <div className="flex-shrink-0 w-28 bg-[#14221A] border border-[#213428] rounded-xl p-2.5 flex flex-col gap-2">
+                          <div className="flex items-center gap-1.5 text-gray-400">
+                            <span className="material-symbols-outlined text-[16px]">calendar_today</span>
+                            <span className="text-[10px] font-medium">Agend.</span>
                           </div>
-                          <div className="flex items-end gap-2">
-                            <span className="text-2xl font-bold text-white leading-none">12</span>
-                            <span className="text-[10px] text-primary font-bold mb-0.5">+15%</span>
+                          <div className="flex items-end gap-1">
+                            <span className="text-xl font-bold text-white leading-none">12</span>
+                            <span className="text-[9px] text-primary font-bold mb-0.5">+15%</span>
                           </div>
                         </div>
-                        <div className="flex-shrink-0 w-32 bg-[#14221A] border border-[#213428] rounded-xl p-3 flex flex-col gap-3">
-                          <div className="flex items-center gap-2 text-gray-400">
-                            <span className="material-symbols-outlined text-[18px]">cancel</span>
-                            <span className="text-xs font-medium">Canc.</span>
+                        <div className="flex-shrink-0 w-28 bg-[#14221A] border border-[#213428] rounded-xl p-2.5 flex flex-col gap-2">
+                          <div className="flex items-center gap-1.5 text-gray-400">
+                            <span className="material-symbols-outlined text-[16px]">cancel</span>
+                            <span className="text-[10px] font-medium">Canc.</span>
                           </div>
-                          <div className="flex items-end gap-2">
-                            <span className="text-2xl font-bold text-white leading-none">2</span>
-                            <span className="text-[10px] text-red-500 font-bold mb-0.5">-5%</span>
+                          <div className="flex items-end gap-1">
+                            <span className="text-xl font-bold text-white leading-none">2</span>
+                            <span className="text-[9px] text-red-500 font-bold mb-0.5">-5%</span>
+                          </div>
+                        </div>
+                        <div className="flex-shrink-0 w-28 bg-[#14221A] border border-[#213428] rounded-xl p-2.5 flex flex-col gap-2">
+                          <div className="flex items-center gap-1.5 text-gray-400">
+                            <span className="material-symbols-outlined text-[16px]">person_off</span>
+                            <span className="text-[10px] font-medium">Faltas</span>
+                          </div>
+                          <div className="flex items-end gap-1">
+                            <span className="text-xl font-bold text-white leading-none">1</span>
+                            <span className="text-[9px] text-gray-500 font-bold mb-0.5">--</span>
                           </div>
                         </div>
                       </div>
                     </section>
                     
-                    <main className="px-5 space-y-4">
+                    <main className="px-4 space-y-3 pb-4">
                       <div className="flex justify-between items-center mb-1">
-                        <h3 className="text-white text-base font-bold">Próximos</h3>
-                        <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
-                          Hoje
+                        <h3 className="text-white text-sm font-bold">Próximos</h3>
+                        <span className="text-[9px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                          Hoje, 24 Mai
                         </span>
                       </div>
                       
                       <div className="bg-[#14221A] border border-[#213428] rounded-xl overflow-hidden shadow-lg">
                         <div className="p-3 flex gap-3">
-                          <div className="size-14 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 shrink-0"></div>
-                          <div className="flex-1 flex flex-col justify-center">
+                          <div className="size-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 shrink-0"></div>
+                          <div className="flex-1 flex flex-col justify-center min-w-0">
                             <div className="flex justify-between items-start">
                               <h4 className="font-bold text-white text-sm">João Silva</h4>
                               <span className="text-primary font-bold text-xs">14:00</span>
                             </div>
                             <p className="text-gray-400 text-xs mt-0.5">Corte + Barba</p>
+                            <div className="flex items-center gap-1 mt-1.5">
+                              <div className="size-3.5 rounded-full bg-gray-700 flex items-center justify-center text-[9px] text-white">L</div>
+                              <span className="text-[9px] text-gray-500">Lucas</span>
+                            </div>
                           </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-px bg-[#213428] border-t border-[#213428]">
+                          <button className="bg-[#14221A] hover:bg-white/5 text-[10px] font-semibold text-gray-300 py-2.5 transition-colors">
+                            Faltou
+                          </button>
+                          <button className="bg-primary/20 hover:bg-primary/30 text-[10px] font-bold text-primary py-2.5 transition-colors">
+                            Compareceu
+                          </button>
                         </div>
                       </div>
                     </main>
                   </div>
                   
-                  <nav className="absolute bottom-0 w-full bg-[#0B120E]/95 backdrop-blur-md border-t border-[#213428] pb-6 pt-3 px-6 flex justify-between z-40">
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="material-symbols-outlined text-[22px] text-primary">grid_view</span>
-                      <span className="text-[9px] font-bold text-primary">Início</span>
+                  {/* Mesma barra de navegação do desktop: 5 ícones sempre visíveis */}
+                  <nav className="flex-shrink-0 w-full bg-[#0B120E]/95 backdrop-blur-md border-t border-[#213428] pt-2.5 pb-5 px-2 flex justify-between items-center z-40">
+                    <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                      <span className="material-symbols-outlined text-[20px] text-primary">grid_view</span>
+                      <span className="text-[8px] font-bold text-primary truncate w-full text-center">Início</span>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="material-symbols-outlined text-[22px] text-gray-500">calendar_month</span>
-                      <span className="text-[9px] font-medium text-gray-500">Agenda</span>
+                    <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                      <span className="material-symbols-outlined text-[20px] text-gray-500">calendar_month</span>
+                      <span className="text-[8px] font-medium text-gray-500 truncate w-full text-center">Agenda</span>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="material-symbols-outlined text-[22px] text-gray-500">person</span>
-                      <span className="text-[9px] font-medium text-gray-500">Conta</span>
+                    <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                      <span className="material-symbols-outlined text-[20px] text-gray-500">content_cut</span>
+                      <span className="text-[8px] font-medium text-gray-500 truncate w-full text-center">Serviços</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                      <span className="material-symbols-outlined text-[20px] text-gray-500">groups</span>
+                      <span className="text-[8px] font-medium text-gray-500 truncate w-full text-center">Equipe</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                      <span className="material-symbols-outlined text-[20px] text-gray-500">person</span>
+                      <span className="text-[8px] font-medium text-gray-500 truncate w-full text-center">Conta</span>
                     </div>
                   </nav>
+                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-white/20 rounded-full z-50 pointer-events-none"></div>
                 </div>
               </div>
             </div>
@@ -353,25 +387,62 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Prova Social */}
+      {/* Testimonial + Stats + Integrações (do novo) */}
       <section className="py-20 bg-[#020403] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">24.255</div>
-              <div className="text-gray-400">Prestadores ativos</div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            {/* Depoimento Pedro Barber */}
+            <div className="relative">
+              <div className="bg-[#0f1c15] p-8 rounded-2xl border border-white/5 relative z-10">
+                <div className="flex gap-1 text-yellow-500 mb-5">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="material-symbols-outlined text-lg" style={{ fontVariationSettings: '"FILL" 1' }}>star</span>
+                  ))}
+                </div>
+                <p className="text-gray-300 text-lg italic leading-relaxed mb-6">
+                  &quot;Mudou completamente a percepção de valor dos meus clientes. O Agenndar não é só uma agenda, é uma ferramenta de posicionamento de marca.&quot;
+                </p>
+                <div className="flex items-center gap-4 border-t border-white/5 pt-5">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/30 to-slate-700 border border-white/10 flex items-center justify-center font-bold text-primary text-sm">
+                    PB
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">Pedro Barber</p>
+                    <p className="text-xs text-gray-500">Fundador, Barbearia Vintage</p>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute top-4 left-4 right-4 bottom-[-8px] bg-slate-800/30 rounded-2xl -z-0" />
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">R$ 2.5M+</div>
-              <div className="text-gray-400">Faturado por empreendedores hoje</div>
+
+            {/* 4 stats */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { value: "2.000+", label: "Profissionais ativos" },
+                { value: "14 dias", label: "Teste gratuito" },
+                { value: "99.9%", label: "Uptime garantido" },
+                { value: "24/7", label: "Agendamento online" },
+              ].map((s) => (
+                <div key={s.label} className="bg-[#0f1c15] p-5 rounded-2xl border border-white/5 flex flex-col gap-2">
+                  <p className="text-2xl font-extrabold text-white">{s.value}</p>
+                  <p className="text-sm text-gray-500">{s.label}</p>
+                </div>
+              ))}
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">4.9★</div>
-              <div className="text-gray-400">Avaliação média</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary mb-2">98%</div>
-              <div className="text-gray-400">Taxa de satisfação</div>
+          </div>
+
+          {/* Integrações Nativas */}
+          <div className="text-center opacity-80 hover:opacity-100 transition-opacity">
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">
+              Integrações Nativas
+            </p>
+            <div className="flex justify-center items-center gap-10 flex-wrap">
+              {["Stripe", "Google Calendar", "WhatsApp"].map((name) => (
+                <span key={name} className="text-base font-bold text-gray-300 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  {name}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -521,8 +592,8 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-[#020403] border-t border-white/10 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 md:col-span-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
+            <div className="col-span-2">
               <div className="flex items-center gap-2 mb-6">
                 <span className="material-symbols-outlined text-primary text-2xl">calendar_month</span>
                 <span className="text-xl font-bold text-white">Agenndar</span>
@@ -554,7 +625,10 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
-            <p>© 2024 Agenndar SaaS. Todos os direitos reservados.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 gap-1 text-center sm:text-left">
+              <p>© 2024 Agenndar. Todos os direitos reservados.</p>
+              <p>Desenvolvido por <a href="https://yourwebplace.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors font-medium">Yourwebplace (YWP)</a>.</p>
+            </div>
             <div className="flex gap-6">
               <a className="hover:text-gray-400" href="#">Termos de Uso</a>
               <a className="hover:text-gray-400" href="#">Privacidade</a>

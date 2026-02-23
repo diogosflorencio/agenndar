@@ -9,7 +9,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Cores primárias
+        // Tema global (verde escuro)
+        "primary-glow": "#34d399",
+        "bg-deep": "#020617",
+        card: "#0f172a",
         primary: {
           DEFAULT: "#13ec5b",
           50: "#ecfdf5",
@@ -23,13 +26,11 @@ module.exports = {
           800: "#065f46",
           900: "#064e3b",
         },
-        // Cores de background
         background: {
           dark: "#020403",
           light: "#f6f8f6",
           DEFAULT: "#0B120E",
         },
-        // Cores de superfície
         surface: {
           DEFAULT: "#0f1c15",
           light: "#14221A",
@@ -38,11 +39,21 @@ module.exports = {
           "app-surface": "#14221A",
           "app-border": "#213428",
         },
-        // Cores de texto
         text: {
           muted: "#8fa898",
           DEFAULT: "#ffffff",
           secondary: "#cbd5e1",
+        },
+        // Dashboard (tema claro) – use em páginas dentro de .theme-dashboard
+        dash: {
+          bg: "var(--dash-bg)",
+          surface: "var(--dash-surface)",
+          "surface-hover": "var(--dash-surface-hover)",
+          border: "var(--dash-border)",
+          text: "var(--dash-text)",
+          "text-muted": "var(--dash-text-muted)",
+          primary: "var(--dash-primary)",
+          "primary-bg": "var(--dash-primary-bg)",
         },
         // Cores de status
         status: {

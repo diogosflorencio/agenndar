@@ -1,249 +1,444 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { supabase } from '@/lib/supabase/client'
-import { QRCodeSVG } from 'qrcode.react'
-import BottomNavigation from '@/components/dashboard/BottomNavigation'
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft,
+  Edit2,
+  Shield,
+  ChevronRight,
+  Users,
+  Scissors,
+  QrCode,
+  Download,
+  Check,
+  Copy,
+  ExternalLink,
+  Save,
+} from "lucide-react";
+import Link from "next/link";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import { QRCodeSVG } from "qrcode.react";
+import { supabase } from "@/lib/supabase/client";
+import BottomNavigation from "@/components/dashboard/BottomNavigation";
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const baseUrl =
+  typeof process.env.NEXT_PUBLIC_APP_URL === "string"
+    ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "")
+    : "https://agenndar.com.br";
+
+function QRCodeDisplay({ slug, color }: { slug: string; color: string }) {
+  const url = `${baseUrl}/${slug}`;
+  return (
+    <div
+      className="w-48 h-48 bg-white rounded-xl flex items-center justify-center border border-slate-100 relative overflow-hidden p-2"
+      style={{ backgroundColor: "white" }}
+    >
+      <QRCodeSVG
+        value={url}
+        size={192}
+        fgColor={color}
+        bgColor="#ffffff"
+        level="M"
+      />
+    </div>
+  );
+}
+
+const QR_THEMES = [
+  { color: "#13ec5b", bg: "#102216", label: "Verde" },
+  { color: "#3B82F6", bg: "#0f172a", label: "Azul" },
+  { color: "#8B5CF6", bg: "#1a0a2e", label: "Roxo" },
+  { color: "#F97316", bg: "#1a0a00", label: "Laranja" },
+  { color: "#ffffff", bg: "#0f172a", label: "Branco" },
+];
+
+function slugify(raw: string): string {
+  return raw
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
 
 export default function ContaPage() {
-  const router = useRouter()
-  const [businessName, setBusinessName] = useState('Studio Premium')
-  const [slug, setSlug] = useState('studiopremium_agendalo')
-  const [selectedTheme, setSelectedTheme] = useState('primary')
-  const [includePhone, setIncludePhone] = useState(true)
-  const [includeAddress, setIncludeAddress] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const [businessName, setBusinessName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [qrTheme, setQrTheme] = useState(0);
+  const [includePhone, setIncludePhone] = useState(true);
+  const [includeAddress, setIncludeAddress] = useState(true);
+  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const themes = [
-    { id: 'primary', color: '#13ec5b', name: 'Verde' },
-    { id: 'blue', color: '#3b82f6', name: 'Azul' },
-    { id: 'purple', color: '#a855f7', name: 'Roxo' },
-    { id: 'orange', color: '#f97316', name: 'Laranja' },
-    { id: 'dark', color: '#1e293b', name: 'Escuro' },
-  ]
+  const publicUrl = `${baseUrl}/${slug}`;
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("users")
+        .select("business_name, phone, slug, avatar_url")
+        .eq("firebase_uid", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setBusinessName(data.business_name ?? "");
+            setSlug(data.slug ?? "");
+            setPhone(data.phone ?? "");
+            setAvatarUrl(data.avatar_url ?? null);
+          }
+        });
+    });
+  }, []);
+
+  const handleSlugChange = (v: string) => {
+    setSlug(slugify(v));
+  };
 
   const handleSave = async () => {
-    try {
-      setLoading(true)
-      if (!supabase) {
-        alert('Configuração do Supabase não encontrada. Configure as variáveis de ambiente e tente novamente.')
-        return
-      }
-
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        const { error } = await supabase
-          .from('users')
-          .update({
-            business_name: businessName,
-            slug: slug,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('firebase_uid', user.id)
-
-        if (error) throw error
-        alert('Alterações salvas com sucesso!')
-      }
-    } catch (error) {
-      console.error('Erro ao salvar:', error)
-      alert('Erro ao salvar alterações. Tente novamente.')
-    } finally {
-      setLoading(false)
+    if (!supabase) {
+      alert("Supabase não configurado.");
+      return;
     }
-  }
+    const cleanSlug = slugify(slug);
+    if (!cleanSlug) {
+      alert("Link público inválido. Use apenas letras, números e hífens.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      if (!authUser) {
+        alert("Faça login para salvar.");
+        return;
+      }
+      const { error } = await supabase
+        .from("users")
+        .update({
+          business_name: businessName.trim(),
+          phone: phone.trim(),
+          slug: cleanSlug,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("firebase_uid", authUser.id);
 
-  const qrCodeUrl = `https://agendalo.com/${slug}`
+      if (error) {
+        if (error.code === "23505") alert("Este link já está em uso. Escolha outro.");
+        else throw error;
+        return;
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao salvar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(publicUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadPDF = () => {
+    // Placeholder: react-to-print ou html2canvas
+    window.print();
+  };
 
   return (
-    <div className="bg-background-dark min-h-screen text-white pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background-dark/80 backdrop-blur-md">
-        <div className="flex items-center p-4 justify-between border-b border-emerald-900/30">
-          <button onClick={() => router.back()} className="flex size-10 shrink-0 items-center justify-center cursor-pointer">
-            <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
-          </button>
-          <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Personalização</h2>
+    <div className={`${jakarta.variable} font-[family-name:var(--font-jakarta)] min-h-screen pb-32 bg-dash-bg text-dash-text`}>
+      <header className="sticky top-0 z-50 bg-dash-surface/95 backdrop-blur-md border-b border-dash-border">
+        <div className="flex items-center px-4 h-14 justify-between max-w-md mx-auto">
+          <Link href="/dashboard" className="h-10 w-10 flex items-center justify-start text-dash-text-muted hover:text-dash-text">
+            <ArrowLeft size={22} />
+          </Link>
+          <h1 className="text-base font-bold text-dash-text">Personalização</h1>
+          <div className="w-10" />
         </div>
       </header>
 
       <main className="max-w-md mx-auto">
-        {/* Profile Section */}
-        <section className="flex p-6">
-          <div className="flex w-full flex-col gap-6 items-center">
-            <div className="flex gap-4 flex-col items-center">
-              <div className="relative">
-                <div 
-                  className="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32 border-4 border-primary/20"
-                  style={{
-                    backgroundImage: 'url(https://lh3.googleusercontent.com/aida-public/AB6AXuCoJtjVSvoZl1UQz3kRg8PDc84bGqOuiEasjTdwmE1ReO0gMhA-HSvR8hG2w728WZ-6vFHfZ4tjh3ah08VpKeV3Z5WKDC_QEjHWE3B46aYQP6YIWvWPRtt37NOUgvMM8Rzia1PhLSb4heZFNarBiiJvafYXwTjnAtGO4nhaN6tryi-cEyDHVA91C_6YEKJ0UIMQrHJftdQf3Aic1hbBu53OjqdXU2m-FCxLItCBFeqVmGeyu-Bytl_KggEw-0kIrrVzcCfqPouSyQ0)'
-                  }}
-                />
-                <div className="absolute bottom-0 right-0 bg-primary text-background-dark p-2 rounded-full flex items-center justify-center border-4 border-background-dark">
-                  <span className="material-symbols-outlined text-sm font-bold">edit</span>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-center">
-                <p className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">{businessName}</p>
-                <p className="text-primary text-base font-normal leading-normal text-center">@{slug}</p>
-              </div>
+        <section className="flex flex-col items-center py-8 px-6">
+          <div className="relative mb-4">
+            <div className="w-28 h-28 rounded-full border-4 border-dash-primary/30 bg-dash-primary-bg flex items-center justify-center overflow-hidden">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-4xl font-bold text-dash-primary">{businessName ? businessName.charAt(0).toUpperCase() : "?"}</span>
+              )}
             </div>
-            <button className="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary/10 text-primary border border-primary/20 text-sm font-bold leading-normal tracking-[0.015em]">
-              <span className="truncate">Alterar Foto</span>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 bg-dash-primary text-white p-2 rounded-full border-4 border-dash-bg"
+            >
+              <Edit2 size={12} />
             </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={() => {
+                /* TODO: upload to Supabase Storage bucket avatars */
+              }}
+            />
           </div>
+
+          <p className="text-xl font-extrabold text-dash-text">{businessName || "Seu negócio"}</p>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="flex items-center gap-1.5 mt-1 text-dash-primary text-sm font-medium"
+          >
+            <span>@{slug || "seu-link"}</span>
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+          </button>
         </section>
 
-        {/* Account Information */}
-        <section>
-          <h3 className="text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Informações da Conta</h3>
-          <div className="flex flex-wrap items-end gap-4 px-4 py-3">
-            <label className="flex flex-col min-w-40 flex-1">
-              <p className="text-sm font-medium leading-normal pb-2 opacity-80">Nome do Estabelecimento</p>
+        <section className="px-4 mb-6">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-dash-text-muted mb-3 px-1">Informações da Conta</h2>
+          <div className="bg-dash-surface border border-dash-border rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-dash-border">
+              <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">Nome do Estabelecimento</label>
               <input
-                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-[#326744] bg-[#193322] focus:border-primary h-14 p-[15px] text-base font-normal leading-normal"
+                type="text"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
+                className="w-full bg-transparent text-dash-text text-[15px] font-semibold focus:outline-none placeholder:text-dash-text-muted"
+                placeholder="Nome do negócio"
               />
-            </label>
-          </div>
-          <div className="flex flex-wrap items-end gap-4 px-4 py-3">
-            <label className="flex flex-col min-w-40 flex-1">
-              <p className="text-sm font-medium leading-normal pb-2 opacity-80">Slug da URL (Link público)</p>
-              <div className="flex w-full flex-1 items-stretch rounded-lg group">
-                <div className="text-[#92c9a4] flex border border-[#326744] bg-[#193322] items-center justify-center px-4 rounded-l-lg border-r-0 text-sm italic">
-                  agendalo.com/
-                </div>
+            </div>
+            <div className="p-4 border-b border-dash-border">
+              <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">Link Público</label>
+              <div className="flex items-center gap-0">
+                <span className="text-dash-text-muted text-sm font-medium shrink-0">agenndar.com.br/</span>
                 <input
-                  className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-white focus:outline-0 focus:ring-0 border border-[#326744] bg-[#193322] focus:border-primary h-14 p-[15px] text-base font-normal leading-normal"
+                  type="text"
                   value={slug}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  className="flex-1 bg-transparent text-dash-primary text-[15px] font-semibold focus:outline-none min-w-0"
+                  placeholder="seu-link"
                 />
+                <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-dash-text-muted hover:text-dash-text ml-2 shrink-0">
+                  <ExternalLink size={14} />
+                </a>
               </div>
-            </label>
+            </div>
+            <div className="p-4">
+              <label className="text-xs font-semibold text-dash-text-muted uppercase tracking-wider block mb-2">WhatsApp de Contato</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full bg-transparent text-dash-text text-[15px] font-semibold focus:outline-none placeholder:text-dash-text-muted"
+                placeholder="+55 (11) 99999-9999"
+              />
+            </div>
           </div>
         </section>
 
-        {/* QR Code Section */}
-        <section className="mt-8 px-4">
-          <h3 className="text-lg font-bold leading-tight tracking-[-0.015em] pb-4">Seu QR Code</h3>
-          <div className="bg-[#193322] rounded-xl border border-emerald-900/30 p-6 flex flex-col items-center shadow-sm">
-            {/* QR Preview */}
-            <div className="bg-white p-4 rounded-xl shadow-inner mb-6 border border-slate-100">
-              <div className="w-48 h-48 bg-white flex items-center justify-center rounded-lg">
-                <QRCodeSVG value={qrCodeUrl} size={192} />
+        <section className="px-4 mb-6">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-dash-text-muted mb-3 px-1">Seu QR Code</h2>
+          <div className="bg-dash-surface border border-dash-border rounded-2xl p-5">
+            <div className="flex justify-center mb-5">
+              <div
+                className="p-4 rounded-xl"
+                style={{ backgroundColor: QR_THEMES[qrTheme].bg }}
+              >
+                <QRCodeDisplay
+                  slug={slug || "seu-link"}
+                  color={QR_THEMES[qrTheme].color}
+                />
               </div>
             </div>
 
-            {/* Theme Selection */}
-            <div className="w-full mb-6">
-              <p className="text-sm font-medium mb-3 opacity-80">Escolha o Tema</p>
-              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                {themes.map((theme) => (
+            <div className="mb-5">
+              <p className="text-xs font-semibold text-dash-text-muted mb-3">
+                Tema do QR Code
+              </p>
+              <div className="flex gap-2.5">
+                {QR_THEMES.map((t, i) => (
                   <button
-                    key={theme.id}
-                    onClick={() => setSelectedTheme(theme.id)}
-                    className={`shrink-0 w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all ${
-                      selectedTheme === theme.id
-                        ? 'border-primary bg-background-dark'
-                        : 'border-[#326744] bg-[#193322]'
+                    key={t.label}
+                    type="button"
+                    onClick={() => setQrTheme(i)}
+                    className={`w-11 h-11 rounded-full border-2 flex items-center justify-center transition-all ${
+                      qrTheme === i ? "border-dash-primary scale-110" : "border-transparent"
                     }`}
-                    style={{ borderColor: selectedTheme === theme.id ? theme.color : undefined }}
+                    style={{ backgroundColor: t.bg }}
+                    title={t.label}
                   >
                     <div
                       className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: theme.color }}
+                      style={{ backgroundColor: t.color }}
                     />
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* PDF Customization */}
-            <div className="w-full space-y-4 mb-6">
-              <p className="text-sm font-medium opacity-80">Personalizar Impressão (PDF)</p>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includePhone}
-                  onChange={(e) => setIncludePhone(e.target.checked)}
-                  className="w-5 h-5 rounded border-emerald-900/30 text-primary focus:ring-primary bg-background-dark"
-                />
-                <span className="text-sm">Incluir telefone no rodapé</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeAddress}
-                  onChange={(e) => setIncludeAddress(e.target.checked)}
-                  className="w-5 h-5 rounded border-emerald-900/30 text-primary focus:ring-primary bg-background-dark"
-                />
-                <span className="text-sm">Incluir endereço físico</span>
-              </label>
+            <div className="mb-5">
+              <p className="text-xs font-semibold text-dash-text-muted mb-3">
+                Personalizar Impressão (PDF)
+              </p>
+              <div className="space-y-3">
+                {[
+                  {
+                    label: "Incluir telefone no rodapé",
+                    value: includePhone,
+                    set: setIncludePhone,
+                  },
+                  {
+                    label: "Incluir endereço físico",
+                    value: includeAddress,
+                    set: setIncludeAddress,
+                  },
+                ].map((item) => (
+                  <label
+                    key={item.label}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => item.set(!item.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && item.set(!item.value)
+                      }
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                        item.value
+                          ? "bg-dash-primary border-dash-primary"
+                          : "border-dash-border"
+                      }`}
+                    >
+                      {item.value && (
+                        <Check size={11} className="text-white" />
+                      )}
+                    </div>
+                    <span className="text-sm text-dash-text-muted">{item.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
-            <button className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-4 bg-primary text-background-dark text-sm font-bold leading-normal tracking-[0.015em]">
-              <span className="material-symbols-outlined">picture_as_pdf</span>
-              <span className="truncate">Gerar PDF para Impressão</span>
+            <button
+              type="button"
+              className="w-full h-12 bg-dash-surface-hover border border-dash-border hover:bg-dash-border/50 text-dash-text font-bold rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
+              onClick={handleDownloadPDF}
+            >
+              <Download size={16} />
+              Gerar PDF para Impressão
             </button>
           </div>
         </section>
 
-        {/* Quick Links */}
-        <section className="mt-8 mb-8">
-          <h3 className="text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-4">Gestão do Negócio</h3>
-          <div className="px-4 space-y-2">
-            <Link
-              href="/dashboard/equipe"
-              className="flex items-center justify-between p-4 bg-[#193322] border border-emerald-900/30 rounded-xl active:opacity-70 transition-opacity"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary">group</span>
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">Gestão de Colaboradores</p>
-                  <p className="text-xs opacity-60">Equipe, permissões e escalas</p>
-                </div>
-              </div>
-              <span className="material-symbols-outlined text-slate-400">chevron_right</span>
-            </Link>
-            <Link
-              href="/dashboard/servicos"
-              className="flex items-center justify-between p-4 bg-[#193322] border border-emerald-900/30 rounded-xl active:opacity-70 transition-opacity"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary">list_alt</span>
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">Gestão de Serviços</p>
-                  <p className="text-xs opacity-60">Preços, duração e categorias</p>
-                </div>
-              </div>
-              <span className="material-symbols-outlined text-slate-400">chevron_right</span>
-            </Link>
+        <section className="px-4 mb-6">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-dash-text-muted mb-3 px-1">Gestão do Negócio</h2>
+
+          <div className="space-y-2">
+            {[
+              {
+                href: "/dashboard/colaboradores",
+                icon: Users,
+                title: "Gestão de Colaboradores",
+                sub: "Equipe, permissões e escalas",
+              },
+              {
+                href: "/dashboard/servicos",
+                icon: Scissors,
+                title: "Gestão de Serviços",
+                sub: "Preços, duração e categorias",
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center justify-between p-4 bg-dash-surface border border-dash-border rounded-xl active:opacity-70 transition-opacity hover:bg-dash-surface-hover"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-dash-primary-bg flex items-center justify-center">
+                      <Icon size={18} className="text-dash-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-dash-text">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-dash-text-muted mt-0.5">{item.sub}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="text-dash-text-muted" />
+                </Link>
+              );
+            })}
           </div>
         </section>
+
+        <div className="flex items-center justify-center gap-2 px-4 mb-4">
+          <Shield size={13} className="text-dash-primary/70" />
+          <p className="text-[11px] text-dash-text-muted">
+            Seus dados estão protegidos e criptografados
+          </p>
+        </div>
       </main>
 
-      {/* Bottom Sticky Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-dark/90 backdrop-blur-md border-t border-emerald-900/30 z-50 pb-24">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-dash-surface/95 backdrop-blur-md border-t border-dash-border z-50">
         <div className="max-w-md mx-auto">
-          <button
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={handleSave}
             disabled={loading}
-            className="w-full bg-primary text-background-dark font-bold h-14 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 disabled:opacity-50"
+            className={`w-full h-14 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+              saved
+                ? "bg-dash-surface-hover text-dash-primary"
+                : "bg-dash-primary text-white shadow-lg"
+            }`}
           >
-            {loading ? 'Salvando...' : 'Salvar Alterações'}
-          </button>
+            <AnimatePresence mode="wait">
+              {saved ? (
+                <motion.div
+                  key="saved"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-2"
+                >
+                  <Check size={18} /> Alterações salvas!
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="save"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center gap-2"
+                >
+                  <Save size={18} /> Salvar Alterações
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
         </div>
       </div>
 
       <BottomNavigation currentRoute="conta" />
     </div>
-  )
+  );
 }
-

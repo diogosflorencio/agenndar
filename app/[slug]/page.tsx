@@ -403,7 +403,6 @@ function ConfirmModal({
 
 export default function PublicBookingPage() {
   const params = useParams();
-  const router = useRouter();
   const slug = typeof params.slug === "string" ? params.slug : "";
 
   const [provider, setProvider] = useState<Provider | null>(null);
